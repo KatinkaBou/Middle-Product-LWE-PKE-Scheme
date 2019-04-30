@@ -2,7 +2,7 @@
 
 '''
 This is a sage program realizing the Public Key Encryption (PKE) scheme from Roşca et al. [RSSS17].
-The PKE scheme is chosen to be IND-CPA secure under the Middle-Product Learning With Errors (MP-LWE) problem appropriate parameters.
+The PKE scheme is chosen to be IND-CPA secure under the Middle-Product Learning With Errors (MP-LWE) problem using appropriate parameters.
 
 The code consists of the following functions:
 
@@ -96,7 +96,7 @@ def setparams(sec_lambda):
 
 # FUNCTION KEYGEN
 ''' 	INPUT:	- <sec_lambda> : security parameter for the PKE scheme
-	OUTPUT: - The public key of the PKE scheme
+	OUTPUT: - The secret key <sk> and the public key <pk> of the PKE scheme
 '''
 def keygen(sec_lambda):
     # initialize the parameters
