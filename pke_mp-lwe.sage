@@ -42,8 +42,8 @@ def polynomial_from_list(list_a,q):
 	P=PolynomialRing(Z,'x')
 	x=P.gen()
 	tmp=0 
-        j=0 
-        for i in list_a: 
+	j=0
+	for i in list_a: 
 		tmp = tmp + (i * (x**(j))) 
 		j += 1 
 	return tmp
@@ -60,13 +60,12 @@ def middleproduct(a,b,d,k,q):
 	P=a.parent()	
 	x=P.gen()
 	# first compute the full product of a and b modulo x^(k+d) modulo q
-        m=(a*b)%x^(k+d)
-        # safe the coefficients
-        m_list=m.list() 
-        # deleting coefficients underneath
-        for i in range(k):
-                del m_list[0]
-               
+	m=(a*b)%x^(k+d)
+	# safe the coefficients
+	m_list=m.list() 
+	# deleting coefficients underneath
+	for i in range(k):
+		del m_list[0]         
 	# rebuild the polynomial from the list	
 	return polynomial_from_list(m_list,q)
 
@@ -99,45 +98,41 @@ def setparams(sec_lambda):
 	OUTPUT: - The secret key <sk> and the public key <pk> of the PKE scheme
 '''
 def keygen(sec_lambda):
-    # initialize the parameters
-    (n,q,t,alpha,Z,P,x)=setparams(sec_lambda)
-	
-    # initialize the public key tuple	
-    pk=[]
-    
-    # sample private key
-    s=P.random_element(2*n-2)
-    sk=s
-
-    for i in range(t):
-        # choose <a> at random as the first part of public key
-	a=P.random_element(n-1)
-      	# calculate the middle-product of <a> and <s>
-        m=middleproduct(a,s,n,n-1,q)
-	# register coefficients of this middle-product in a list
-	list_m=m.list()
-	# choose error polynomial
-	# first sample coefficients
-	list_e=[ZZ.random_element(x=alpha*q,distribution='gaussian') for i in range(n)]
-	if len(list_m) != len(list_e):
-		print("Oops, there is a problem: The dimensions of the middle-product and the error do not fit together.")
-	# then add twice the error to the middle-product	
-	for i in range(len(list_m)):
-		list_m[i]=list_m[i]+2*list_e[i]
-	# then add this MP-LWE sample to the public key
-	pk.append((a,polynomial_from_list(list_m,q)))
-    return (sk,pk)
+	# initialize the parameters
+	(n,q,t,alpha,Z,P,x)=setparams(sec_lambda)
+	# initialize the public key tuple	
+	pk=[]
+	# sample private key
+	s=P.random_element(2*n-2)
+	sk=s
+	for i in range(t):
+		# choose <a> at random as the first part of public key
+		a=P.random_element(n-1)
+		# calculate the middle-product of <a> and <s>
+		m=middleproduct(a,s,n,n-1,q)
+		# register coefficients of this middle-product in a list
+		list_m=m.list()
+		# choose error polynomial
+		# first sample coefficients
+		list_e=[ZZ.random_element(x=alpha*q,distribution='gaussian') for k in range(n)]
+		if len(list_m) != len(list_e):
+			print("Oops, there is a problem: The dimensions of the middle-product and the error do not fit together.")
+		# then add twice the error to the middle-product	
+		for j in range(len(list_m)):
+			list_m[j]=list_m[j]+2*list_e[j]
+		# then add this MP-LWE sample to the public key
+		pk.append((a,polynomial_from_list(list_m,q)))
+	return (sk,pk)
 
 # FUNCTION ENCRYPT
-''' 	INPUT:	- <pk> : Public Key consisting of tuples (a_i,b_i)_{i \leq t} 
+''' 	INPUT:	- <pk> : Public Key consisting of tuples (a_i,b_i)_{i <= t} 
 		- <m> : message to encrypt as a list of <n/2> elements over {0,1}
 		- <sec_lambda> : security parameter for the PKE scheme
 	OUTPUT: - The ciphertext <(c_1,c_2)> of the message <m> under the public key <pk>
 '''
 def encrypt(pk,m,sec_lambda):
 	# initialize the parameters
-        (n,q,t,alpha,Z,P,x)=setparams(sec_lambda)
-
+	(n,q,t,alpha,Z,P,x)=setparams(sec_lambda)
 	# build message polynomial 
 	m=polynomial_from_list(m,q)
 	# set initial value of c_1 (first ciphertext part) and c_2 (second ciphertext part)
@@ -159,14 +154,12 @@ def encrypt(pk,m,sec_lambda):
 '''
 def decrypt(c,sk,sec_lambda):
 	# initialize the parameters
-        (n,q,t,alpha,Z,P,x)=setparams(sec_lambda)
-
+	(n,q,t,alpha,Z,P,x)=setparams(sec_lambda)
 	result=c[1]-middleproduct(c[0],sk,n/2,((3*n)/2)-1,q)
 	# centering the coefficients of result
 	# in order to do so, translate it as a list of integers (not modulo q)
 	coeff=result.list()
 	for i in range(result.degree()+1):
-        	coeff[i]=Mod(coeff[i],q).lift_centered()%2
-	
+		coeff[i]=Mod(coeff[i],q).lift_centered()%2
 	return coeff
 
