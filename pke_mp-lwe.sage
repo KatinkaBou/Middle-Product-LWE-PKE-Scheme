@@ -1,4 +1,14 @@
-# Public Key Encryption scheme based on Middle-Produc Learning with Errors
+# -*- coding: utf-8 -*-
+"""
+    Created on 09/03/2020
+    Last Modification 09/03/2020
+    
+    @creator: Katharina BOUDGOUST
+    
+    ###############################################################################
+    #   Public Key Encryption scheme based on Middle-Produc Learning with Errors  #
+    ###############################################################################
+    """
 
 '''
 This is a sage program realizing the Public Key Encryption (PKE) scheme from Roşca et al. [RSSS17].
